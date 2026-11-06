@@ -20,12 +20,27 @@ const OUTLINE_FADE_ZOOM: [number, number] = [10, 12];
 const ELEVATION_PER_DENSITY = 8;
 const HEX_MATERIAL = { ambient: 0.55, diffuse: 0.55, shininess: 8 };
 const ALWAYS_ON_TOP = { depthCompare: "always" } as const;
+/** Reject a second draw at the same depth, so overlapping hexes don't blend twice. */
+const FIRST_DRAW_WINS = { depthCompare: "less" } as const;
+/** How far each hex grows past its edges, in pixels, to close seams between neighbors. */
+const HEX_SEAM_PIXELS = 0.75;
+/** Approximate center-to-corner size of a res-9 hex. */
+const HEX_RADIUS_METERS = 175;
 
 type Ring = [number, number][];
 
 /** Outer boundaries (and holes) of a set of cells, as [lng, lat] rings. */
 function outlineRings(cells: string[]): Ring[] {
   return cells.length ? (cellsToMultiPolygon(cells, true).flat() as Ring[]) : [];
+}
+
+/**
+ * Deck draws every hex from one shared shape, so neighbors' edges don't quite meet and
+ * the basemap shows through. Scaling hexes up by a fraction of a pixel closes the gaps.
+ */
+function seamCoverage(zoom: number, latitude: number): number {
+  const metersPerPixel = (78271.517 * Math.cos((latitude * Math.PI) / 180)) / 2 ** zoom;
+  return 1 + (HEX_SEAM_PIXELS * metersPerPixel) / HEX_RADIUS_METERS;
 }
 
 function fade(zoom: number, [from, to]: [number, number]): number {
@@ -82,7 +97,11 @@ export default function GameMap({ grid }: { grid: Grid }) {
         [-68.8, 43.6],
       ],
       dragRotate: false,
-      attributionControl: { compact: true },
+      // Not `compact: true`: that hides credits on the first pan, and the MassDOT
+      // license asks us to "clearly acknowledge" them as the data provider.
+      attributionControl: {
+        customAttribution: 'Transit data: <a href="https://www.mbta.com/developers">MassDOT/MBTA</a>',
+      },
     });
     map.touchZoomRotate.disableRotation();
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
@@ -311,6 +330,9 @@ export default function GameMap({ grid }: { grid: Grid }) {
         material: HEX_MATERIAL,
         // H3HexagonLayer strokes every hex in black by default; no borders.
         stroked: false,
+        // Massachusetts spans little enough latitude for one value to do.
+        coverage: seamCoverage(zoom, 42.3),
+        parameters: FIRST_DRAW_WINS,
         updateTriggers: {
           getFillColor: [version, view, extruded],
           // Heights only matter in 3D; skip recomputing them while flat.

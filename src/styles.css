@@ -803,7 +803,13 @@ input:focus-visible {
     display: none;
   }
 
+  /* This corner also holds the map credits, so hide only the zoom buttons. The
+     offset keeps the credits above the bottom sheet and the toolbox strip. */
   .maplibregl-ctrl-bottom-right {
+    right: 0 !important;
+    bottom: calc(38vh + 46px) !important;
+  }
+  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
     display: none;
   }
 }

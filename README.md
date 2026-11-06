@@ -107,3 +107,13 @@ src/game/            grid loading, zones, edit store (undo/redo), stats, scenari
 src/map/GameMap.tsx  MapLibre basemap (OpenFreeMap Positron) + deck.gl hex layers, painting input
 src/ui/              top bar, toolbox, sidebar (goals, stats, towns, inspector), legend
 ```
+
+## License
+
+The code is [MIT licensed](LICENSE). That license doesn't cover the third-party
+data in `public/data/grid.json`, which stays under its sources' terms:
+
+- **Transit data** is provided by MassDOT/MBTA under the
+  [MassDOT Developers License Agreement](https://www.mbta.com/developers/gtfs).
+  Hexachusetts isn't affiliated with or endorsed by MassDOT or the MBTA.
+- **Housing and boundary data** comes from the U.S. Census Bureau.
