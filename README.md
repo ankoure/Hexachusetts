@@ -21,6 +21,14 @@ To rebuild it, see [Data](#data).
 hosted under any prefix). `grid.json` is ~7.7 MB raw and ~0.8 MB gzipped, so
 serve it with compression.
 
+## Deploying
+
+Every push to `main` builds the site and publishes it to GitHub Pages at
+<https://ankoure.github.io/Hexachusetts/>, using
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). A failed build
+leaves the current site up. To redeploy without a push, run the workflow from
+the repo's Actions tab.
+
 ## How it plays
 
 - **Zones** (keys `1`–`7`) set a hex to a target *gross* density, i.e. homes per
