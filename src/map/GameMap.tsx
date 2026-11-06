@@ -23,9 +23,9 @@ const ALWAYS_ON_TOP = { depthCompare: "always" } as const;
 /** Reject a second draw at the same depth, so overlapping hexes don't blend twice. */
 const FIRST_DRAW_WINS = { depthCompare: "less" } as const;
 /** How far each hex grows past its edges, in pixels, to close seams between neighbors. */
-const HEX_SEAM_PIXELS = 0.75;
-/** Approximate center-to-corner size of a res-9 hex. */
-const HEX_RADIUS_METERS = 175;
+const HEX_SEAM_PIXELS = 0.3;
+/** Center-to-corner size of a res-9 hex in Massachusetts. */
+const HEX_RADIUS_METERS = 208;
 
 type Ring = [number, number][];
 
