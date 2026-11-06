@@ -1,0 +1,15 @@
+[project]
+name = "hexachusetts-pipeline"
+version = "0.1.0"
+description = "Builds the H3 hex grid that Hexachusetts loads"
+requires-python = ">=3.11"
+dependencies = [
+    "geopandas>=1.0",
+    "h3>=4.1",
+    "pandas>=2.2",
+    "pyogrio>=0.9",
+    "shapely>=2.0",
+]
+
+[tool.uv]
+package = false
