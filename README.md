@@ -24,7 +24,7 @@ serve it with compression.
 ## Deploying
 
 Every push to `main` builds the site and publishes it to GitHub Pages at
-<https://ankoure.github.io/Hexachusetts/>, using
+<https://hexachusetts.com/>, using
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). A failed build
 leaves the current site up. To redeploy without a push, run the workflow from
 the repo's Actions tab.
@@ -35,10 +35,11 @@ the repo's Actions tab.
   acre of land across the whole hex, streets included: Open space 0, Rural 0.5,
   Suburban 3, Streetcar suburb 10, Triple-decker 25, Mid-rise 50, High-rise 100.
   For scale, the densest hexes today (Back Bay, the West End) are around 60–90.
-- **Only add homes** (on by default) skips hexes that a zone would make *less*
+- **Only upzone** (on by default) skips hexes that a zone would make *less*
   dense than today, so painting Mid-rise across Back Bay doesn't quietly
   demolish anything. Turn it off to downzone.
-- **Restore** (`E`) returns hexes to today's count. **Inspect** (`I`) shows a
+- **Paint** (`P`) goes back to the last zone after using another tool.
+  **Restore** (`E`) returns hexes to today's count. **Inspect** (`I`) shows a
   hex's town, homes, density, and nearest station. Hold `Space` (or use Pan,
   `H`) to drag the map while a brush is active; `[` `]` resize the brush.
 - **Views**: Density / Change (`V`), 3D extrusion (`B`), stations with their

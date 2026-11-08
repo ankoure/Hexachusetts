@@ -25,6 +25,8 @@ interface GameState {
   stroke: Diff | null;
 
   tool: Tool;
+  /** Zone the Paint tool returns to after Restore, Inspect or Pan. */
+  lastZone: number;
   brushSize: number;
   /** Skip hexes a zone would make less dense than today. */
   onlyAdd: boolean;
@@ -77,6 +79,7 @@ export const useGame = create<GameState>((set, get) => ({
   stroke: null,
 
   tool: { kind: "zone", zone: 4 },
+  lastZone: 4,
   brushSize: 1,
   onlyAdd: true,
   scenarioId: "home-for-everyone",
@@ -88,7 +91,7 @@ export const useGame = create<GameState>((set, get) => ({
   selected: null,
 
   setGrid: (grid) => set({ grid }),
-  setTool: (tool) => set({ tool }),
+  setTool: (tool) => set(tool.kind === "zone" ? { tool, lastZone: tool.zone } : { tool }),
   setBrushSize: (size) => set({ brushSize: Math.max(0, Math.min(MAX_BRUSH, size)) }),
   toggleOnlyAdd: () => set((s) => ({ onlyAdd: !s.onlyAdd })),
   setScenario: (scenarioId) => set({ scenarioId }),

@@ -1,4 +1,4 @@
-import type React from "react";
+import { useState, type ReactNode } from "react";
 import { MAX_BRUSH, useGame, type Tool } from "../game/store";
 import { ZONES } from "../game/zones";
 import { zoneSwatch } from "../map/colors";
@@ -13,6 +13,7 @@ const diskSize = (k: number) => 1 + 3 * k * (k + 1);
 export default function Toolbox() {
   const tool = useGame((s) => s.tool);
   const setTool = useGame((s) => s.setTool);
+  const lastZone = useGame((s) => s.lastZone);
   const brushSize = useGame((s) => s.brushSize);
   const setBrushSize = useGame((s) => s.setBrushSize);
   const canUndo = useGame((s) => s.undoStack.length > 0);
@@ -22,13 +23,21 @@ export default function Toolbox() {
 
   const onlyAdd = useGame((s) => s.onlyAdd);
   const toggleOnlyAdd = useGame((s) => s.toggleOnlyAdd);
+  const [showOnlyAddHelp, setShowOnlyAddHelp] = useState(false);
 
-  const toolButton = (t: Tool, label: string, key: string, icon: React.ReactNode, help: string) => (
+  const toolButton = (
+    t: Tool,
+    label: string,
+    key: string,
+    icon: ReactNode,
+    help: string,
+    active = sameTool(tool, t),
+  ) => (
     <button
-      className={`tool ${sameTool(tool, t) ? "active" : ""}`}
+      className={`tool ${active ? "active" : ""}`}
       onClick={() => setTool(t)}
       title={`${help} (${key})`}
-      aria-pressed={sameTool(tool, t)}
+      aria-pressed={active}
     >
       {icon}
       <span className="tool-name">{label}</span>
@@ -61,6 +70,14 @@ export default function Toolbox() {
       </div>
 
       <div className="tools">
+        {toolButton(
+          { kind: "zone", zone: lastZone },
+          "Paint",
+          "P",
+          <PaintIcon />,
+          `Paint with ${ZONES.find((z) => z.id === lastZone)?.name ?? "the last zone"}`,
+          tool.kind === "zone",
+        )}
         {toolButton({ kind: "erase" }, "Restore", "E", <RestoreIcon />, "Restore hexes to today")}
         {toolButton({ kind: "inspect" }, "Inspect", "I", <InspectIcon />, "Click a hex for details")}
         {toolButton({ kind: "pan" }, "Pan", "H", <PanIcon />, "Drag to move the map")}
@@ -80,9 +97,25 @@ export default function Toolbox() {
         />
       </label>
 
-      <label className="check" title="When on, a zone never lowers a hex below the homes it has today">
-        <input type="checkbox" checked={onlyAdd} onChange={toggleOnlyAdd} /> Only add homes
-      </label>
+      <div className="check-row">
+        <label className="check">
+          <input type="checkbox" checked={onlyAdd} onChange={toggleOnlyAdd} /> Only upzone
+        </label>
+        <button
+          type="button"
+          className="help-toggle"
+          aria-expanded={showOnlyAddHelp}
+          aria-controls="only-upzone-help"
+          aria-label="What does Only upzone do?"
+          onClick={() => setShowOnlyAddHelp((v) => !v)}
+        >
+          ?
+        </button>
+      </div>
+      <p id="only-upzone-help" className="help-text" hidden={!showOnlyAddHelp}>
+        Zones skip any hex where they'd leave fewer homes than today, so painting Mid-rise over Back Bay won't
+        knock anything down. Open space only covers empty hexes. Turn this off to downzone.
+      </p>
 
       <div className="undo-row">
         <button className="btn" onClick={undo} disabled={!canUndo} title="Undo (Ctrl+Z)">
@@ -111,6 +144,15 @@ const iconProps = {
   strokeLinejoin: "round",
   "aria-hidden": true,
 } as const;
+
+function PaintIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M14 2 8.2 7.8" />
+      <path d="M7.4 8.6c-1.3-.6-2.9.1-3.3 1.6-.3 1.2-.8 2-2.1 2.6 2.2.9 5 .4 6-1.2.6-1 .4-2.2-.6-3z" />
+    </svg>
+  );
+}
 
 function RestoreIcon() {
   return (

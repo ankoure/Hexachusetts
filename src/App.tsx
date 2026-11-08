@@ -112,6 +112,8 @@ function useShortcuts() {
       const n = Number(e.key);
       if (n >= 1 && n <= ZONES.length) return s.setTool({ kind: "zone", zone: n - 1 });
       switch (e.key.toLowerCase()) {
+        case "p":
+          return s.setTool({ kind: "zone", zone: s.lastZone });
         case "e":
           return s.setTool({ kind: "erase" });
         case "i":
